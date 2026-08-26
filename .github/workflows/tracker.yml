@@ -1,0 +1,46 @@
+name: SKS Kısmi Zamanlı İlan Takipçisi
+
+on:
+  schedule:
+    # Her gün Türkiye saati ile 08:00'de çalışır (UTC 05:00)
+    - cron: '0 5 * * *'
+  workflow_dispatch: # GitHub arayüzünden manuel olarak tetikleme imkanı
+
+permissions:
+  contents: write # data/last_state.json dosyasını depoya geri kaydetmek için
+
+jobs:
+  check-sks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Depoyu Klonla
+        uses: actions/checkout@v4
+
+      - name: Python Kurulumu
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Bağımlılıkları Yükle
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: SKS Takip Botunu Çalıştır
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        run: |
+          python tracker.py
+
+      - name: Değişiklikleri Depoya Kaydet (Commit & Push)
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/last_state.json
+          git diff --staged --quiet || (git commit -m "chore: sks durum hafızası güncellendi [skip ci]" && git push)
