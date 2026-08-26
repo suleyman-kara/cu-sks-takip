@@ -28,7 +28,7 @@ if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
 # Sayfa URL'leri
 IFRAME_URL = "https://sksoto.cu.edu.tr/burs/yarizaman-monitor.asp"
 MAIN_PAGE_URL = "https://sks.cu.edu.tr/cu/kismi-zamanli-ogrenci-destek/kismi-zamanli-ogrenci-is-ilanlari-ve-sinavlari"
-BURS_SISTEM_URL = "https://sks.cu.edu.tr/burs"
+
 
 # Durum dosyası yolu
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "last_state.json")
@@ -190,7 +190,6 @@ def generate_email_content(changes: dict, current_state: dict) -> tuple[str, str
             text_lines.append(f"- {j['unit']} / {j['title']}")
         text_lines.append("")
 
-    text_lines.append("Başvuru Sistemi: " + BURS_SISTEM_URL)
     text_lines.append("İlan Sayfası: " + MAIN_PAGE_URL)
     plain_text = "\n".join(text_lines)
 
@@ -262,10 +261,7 @@ def generate_email_content(changes: dict, current_state: dict) -> tuple[str, str
 
     html += f"""
           <div style="text-align: center; margin-top: 25px;">
-            <a href="{BURS_SISTEM_URL}" class="btn" target="_blank">Öğrenci Burslar Sistemine Giriş Yap ↗</a>
-          </div>
-          <div style="text-align: center; margin-top: 10px;">
-            <a href="{MAIN_PAGE_URL}" style="font-size: 12px; color: #64748b;" target="_blank">SKS Resmi İlan Sayfasını Görüntüle</a>
+            <a href="{MAIN_PAGE_URL}" class="btn" target="_blank">İlan Sayfasına Git ↗</a>
           </div>
         </div>
         <div class="footer">
