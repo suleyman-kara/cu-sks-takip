@@ -10,6 +10,8 @@ import argparse
 from datetime import datetime, timezone, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.utils import formataddr
+from email.header import Header
 import urllib.request
 import ssl
 from bs4 import BeautifulSoup
@@ -293,9 +295,11 @@ def send_email(subject: str, plain_text: str, html_content: str):
     receivers = [r.strip() for r in receiver_email.split(",") if r.strip()]
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = f"ÇÜ SKS Takip Botu <{sender_email}>"
+    msg["Subject"] = Header(subject, "utf-8")
+    # Gönderen kısmında ismin düzgün görünmesi ve e-postanın mükerrer basılmaması için formataddr kullanılır
+    msg["From"] = formataddr((str(Header("Çukurova SKS Takip", "utf-8")), sender_email))
     msg["To"] = ", ".join(receivers)
+
 
     part1 = MIMEText(plain_text, "plain", "utf-8")
     part2 = MIMEText(html_content, "html", "utf-8")
